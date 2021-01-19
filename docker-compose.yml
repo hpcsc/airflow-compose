@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:9.6-alpine
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+
+  scheduler:
+    image: apache/airflow:${AIRFLOW_IMAGE_TAG}
+    entrypoint: sh -c '/app/scripts/wait-for postgres:5432 -- airflow db init && airflow scheduler'
+    depends_on:
+      - postgres
+    environment:
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: ${AIRFLOW_DB_CONNECTION}
+    volumes:
+      - ./airflow.cfg:/opt/airflow/airflow.cfg
+      - ./dags:/opt/airflow/dags
+      - ./scripts:/app/scripts
+
+  web:
+    image: apache/airflow:${AIRFLOW_IMAGE_TAG}
+    command: webserver
+    restart: on-failure
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres
+    environment:
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: ${AIRFLOW_DB_CONNECTION}
+    volumes:
+      - ./airflow.cfg:/opt/airflow/airflow.cfg
+      - ./dags:/opt/airflow/dags
+      - ./scripts:/app/scripts
