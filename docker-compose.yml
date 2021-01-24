@@ -3,6 +3,8 @@ version: '3'
 services:
   postgres:
     image: postgres:9.6-alpine
+    ports:
+      - 5432:5432
     environment:
       POSTGRES_USER: airflow
       POSTGRES_PASSWORD: airflow
@@ -22,15 +24,18 @@ services:
 
   web:
     image: apache/airflow:${AIRFLOW_IMAGE_TAG}
-    command: webserver
+    entrypoint: sh -c 'pip install authlib && airflow webserver'
     restart: on-failure
     ports:
       - 8080:8080
     depends_on:
       - postgres
+    env_file:
+      - oauth-secrets.env
     environment:
       AIRFLOW__CORE__SQL_ALCHEMY_CONN: ${AIRFLOW_DB_CONNECTION}
     volumes:
       - ./airflow.cfg:/opt/airflow/airflow.cfg
+      - ./webserver_config.py:/opt/airflow/webserver_config.py
       - ./dags:/opt/airflow/dags
       - ./scripts:/app/scripts
