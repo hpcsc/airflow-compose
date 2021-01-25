@@ -7,7 +7,6 @@ APP_NAME=$1
 SCRIPT_DIR=$(cd $(dirname $0); pwd)
 
 # Microsoft Graph resource app id: 00000003-0000-0000-c000-000000000000
-# openid scope id: 37f7f235-527c-4136-accd-4a02d197296e
 # profile scope id: 14dad69e-099b-42c9-810b-d002981feec1
 APP_CREATION_OUTPUT=$(az ad app create \
     --display-name ${APP_NAME} \
