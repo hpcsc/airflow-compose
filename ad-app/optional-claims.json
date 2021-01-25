@@ -1,0 +1,12 @@
+{
+    "idToken": [
+        {
+            "name": "upn",
+            "source": null,
+            "essential": false,
+            "additionalProperties": [
+                "include_externally_authenticated_upn"
+            ]
+        }
+    ]
+}
